@@ -32,3 +32,7 @@ async def history(request: Request):
 @app.get("/stats", response_class=HTMLResponse)
 async def stats(request: Request):
     return templates.TemplateResponse(request=request, name="stats.html")
+
+@app.get("/doc", response_class=HTMLResponse)
+async def doc(request: Request):
+    return templates.TemplateResponse(request=request, name="doc.html")
