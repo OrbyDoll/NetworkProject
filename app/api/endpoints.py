@@ -50,7 +50,6 @@ async def perform_traceroute(request: TraceRequestCreate, db: AsyncSession = Dep
         
     await db.commit()
     
-    # Reload trace with eager loaded hops to avoid lazy loading in async context
     stmt = select(TraceRequest).options(selectinload(TraceRequest.hops)).where(TraceRequest.id == new_trace_id)
     result = await db.execute(stmt)
     return result.scalars().first()

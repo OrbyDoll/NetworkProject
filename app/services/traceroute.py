@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 def resolve_dns(target: str) -> str:
     try:
-        # Check if already IP
         socket.inet_aton(target)
         return target
     except socket.error:
@@ -24,7 +23,6 @@ def resolve_dns(target: str) -> str:
         return None
 
 def is_valid_target(target: str) -> bool:
-    # Regex to allow valid domains, IPv4, IPv6. Prevents command injection.
     pattern = re.compile(r'^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$|^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$|^([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}$')
     return bool(pattern.match(target))
 
@@ -40,7 +38,6 @@ async def run_traceroute(target: str) -> List[Dict[str, Any]]:
     if not is_valid_target(target):
         raise ValueError("Invalid target format.")
 
-    # Using -n for no DNS resolution by traceroute itself (we do it manually), -m 30 for max hops, -w 1 for timeout
     cmd = ["traceroute", "-n", "-q", "1", "-w", "1", "-m", "30", target]
     
     logger.info(f"Running traceroute command: {' '.join(cmd)}")
