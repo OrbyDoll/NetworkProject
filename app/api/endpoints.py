@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc
+from sqlalchemy.orm import selectinload
 from typing import List
 from datetime import datetime, timedelta
 
@@ -46,39 +47,26 @@ async def perform_traceroute(request: TraceRequestCreate, db: AsyncSession = Dep
         db.add(new_hop)
         
     await db.commit()
-    await db.refresh(new_trace)
     
-    stmt = select(TraceHop).where(TraceHop.trace_id == new_trace.id).order_by(TraceHop.hop_number)
+    # Reload trace with eager loaded hops to avoid lazy loading in async context
+    stmt = select(TraceRequest).options(selectinload(TraceRequest.hops)).where(TraceRequest.id == new_trace.id)
     result = await db.execute(stmt)
-    new_trace.hops = result.scalars().all()
-    
-    return new_trace
+    return result.scalars().first()
 
 @router.get("/api/history", response_model=List[TraceRequestResponse])
 async def get_history(db: AsyncSession = Depends(get_db)):
-    stmt = select(TraceRequest).order_by(desc(TraceRequest.created_at)).limit(50)
+    stmt = select(TraceRequest).options(selectinload(TraceRequest.hops)).order_by(desc(TraceRequest.created_at)).limit(50)
     result = await db.execute(stmt)
-    traces = result.scalars().all()
-    
-    for trace in traces:
-        hop_stmt = select(TraceHop).where(TraceHop.trace_id == trace.id).order_by(TraceHop.hop_number)
-        hop_res = await db.execute(hop_stmt)
-        trace.hops = hop_res.scalars().all()
-        
-    return traces
+    return result.scalars().all()
 
 @router.get("/api/history/{id}", response_model=TraceRequestResponse)
 async def get_history_detail(id: int, db: AsyncSession = Depends(get_db)):
-    stmt = select(TraceRequest).where(TraceRequest.id == id)
+    stmt = select(TraceRequest).options(selectinload(TraceRequest.hops)).where(TraceRequest.id == id)
     result = await db.execute(stmt)
     trace = result.scalars().first()
     if not trace:
         raise HTTPException(status_code=404, detail="Trace not found")
         
-    hop_stmt = select(TraceHop).where(TraceHop.trace_id == trace.id).order_by(TraceHop.hop_number)
-    hop_res = await db.execute(hop_stmt)
-    trace.hops = hop_res.scalars().all()
-    
     return trace
 
 @router.get("/api/stats", response_model=StatsResponse)
