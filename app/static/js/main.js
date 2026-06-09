@@ -14,7 +14,6 @@ function initMap() {
 function renderMap(hops) {
     if (!map) initMap();
     
-    // Clear old data
     if (polyline) map.removeLayer(polyline);
     markers.forEach(m => map.removeLayer(m));
     markers = [];
@@ -99,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Modal close
-    const modal = document.getElementById('history-detail-modal');
     if (modal) {
         modal.querySelector('.close-btn').addEventListener('click', () => {
             modal.classList.add('hidden');
