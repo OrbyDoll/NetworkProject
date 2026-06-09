@@ -32,9 +32,11 @@ async def perform_traceroute(request: TraceRequestCreate, db: AsyncSession = Dep
     db.add(new_trace)
     await db.flush()
     
+    new_trace_id = new_trace.id
+    
     for hop in hops_data:
         new_hop = TraceHop(
-            trace_id=new_trace.id,
+            trace_id=new_trace_id,
             hop_number=hop["hop_number"],
             ip=hop["ip"] if hop["ip"] != "-" else None,
             hostname=hop["hostname"] if hop["hostname"] != "-" else None,
@@ -49,7 +51,7 @@ async def perform_traceroute(request: TraceRequestCreate, db: AsyncSession = Dep
     await db.commit()
     
     # Reload trace with eager loaded hops to avoid lazy loading in async context
-    stmt = select(TraceRequest).options(selectinload(TraceRequest.hops)).where(TraceRequest.id == new_trace.id)
+    stmt = select(TraceRequest).options(selectinload(TraceRequest.hops)).where(TraceRequest.id == new_trace_id)
     result = await db.execute(stmt)
     return result.scalars().first()
 
