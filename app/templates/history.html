@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>History</h2>
+    <div class="table-responsive">
+        <table class="table" id="history-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Target</th>
+                    <th>Resolved IP</th>
+                    <th>Date</th>
+                    <th>Hops Count</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="history-detail-modal" class="modal hidden">
+    <div class="modal-content card">
+        <span class="close-btn">&times;</span>
+        <h2>Trace Details</h2>
+        <div class="table-responsive">
+            <table class="table" id="detail-table">
+                <thead>
+                    <tr>
+                        <th>Hop</th>
+                        <th>IP</th>
+                        <th>Hostname</th>
+                        <th>Delay (ms)</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", loadHistory);
+</script>
+{% endblock %}

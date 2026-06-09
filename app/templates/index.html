@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>Run Traceroute</h2>
+    <form id="traceroute-form">
+        <div class="form-group">
+            <label for="target">Domain or IP Address:</label>
+            <input type="text" id="target" name="target" placeholder="e.g. google.com or 8.8.8.8" required>
+        </div>
+        <button type="submit" class="btn" id="submit-btn">Run Traceroute</button>
+    </form>
+    <div id="loading" class="hidden">Running traceroute, please wait...</div>
+    <div id="error" class="error hidden"></div>
+</div>
+
+<div id="result-container" class="hidden">
+    <div class="card">
+        <h3>Target Info</h3>
+        <p><strong>Domain/IP:</strong> <span id="res-target"></span></p>
+        <p><strong>Resolved IP:</strong> <span id="res-ip"></span></p>
+    </div>
+    
+    <div class="card map-container">
+        <div id="map" style="height: 400px; width: 100%;"></div>
+    </div>
+    
+    <div class="card">
+        <h3>Hops</h3>
+        <div class="table-responsive">
+            <table class="table" id="hops-table">
+                <thead>
+                    <tr>
+                        <th>Hop</th>
+                        <th>IP</th>
+                        <th>Hostname</th>
+                        <th>Delay (ms)</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>System Statistics</h2>
+    <div class="stats-grid" id="stats-container">
+        <!-- Filled by JS -->
+    </div>
+    
+    <h3 style="margin-top: 2rem;">Popular Targets</h3>
+    <ul id="popular-targets" class="list-group">
+        <!-- Filled by JS -->
+    </ul>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", loadStats);
+</script>
+{% endblock %}

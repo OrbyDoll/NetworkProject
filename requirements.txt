@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy
+aiosqlite
+pydantic
+jinja2
+python-multipart
+geoip2
+dnspython
