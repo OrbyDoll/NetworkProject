@@ -48,7 +48,6 @@ async def perform_traceroute(request: TraceRequestCreate, db: AsyncSession = Dep
     await db.commit()
     await db.refresh(new_trace)
     
-    # We load manually to satisfy response_model
     stmt = select(TraceHop).where(TraceHop.trace_id == new_trace.id).order_by(TraceHop.hop_number)
     result = await db.execute(stmt)
     new_trace.hops = result.scalars().all()
@@ -61,7 +60,6 @@ async def get_history(db: AsyncSession = Depends(get_db)):
     result = await db.execute(stmt)
     traces = result.scalars().all()
     
-    # Eager loading manually for simplicity or use options
     for trace in traces:
         hop_stmt = select(TraceHop).where(TraceHop.trace_id == trace.id).order_by(TraceHop.hop_number)
         hop_res = await db.execute(hop_stmt)
@@ -85,20 +83,16 @@ async def get_history_detail(id: int, db: AsyncSession = Depends(get_db)):
 
 @router.get("/api/stats", response_model=StatsResponse)
 async def get_stats(db: AsyncSession = Depends(get_db)):
-    # Total traces
     total_res = await db.execute(select(func.count(TraceRequest.id)))
     total_traces = total_res.scalar() or 0
     
-    # Avg hops
     avg_hops_res = await db.execute(select(func.avg(TraceHop.hop_number)))
     avg_hops = avg_hops_res.scalar() or 0.0
     
-    # Popular targets
     pop_stmt = select(TraceRequest.target, func.count(TraceRequest.target).label('count')).group_by(TraceRequest.target).order_by(desc('count')).limit(5)
     pop_res = await db.execute(pop_stmt)
     popular_targets = [{"target": row.target, "count": row.count} for row in pop_res.all()]
     
-    # Last 24h
     time_24h_ago = datetime.utcnow() - timedelta(days=1)
     last_24h_stmt = select(func.count(TraceRequest.id)).where(TraceRequest.created_at >= time_24h_ago)
     last_24h_res = await db.execute(last_24h_stmt)

@@ -23,12 +23,12 @@ async def startup():
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="index.html")
 
 @app.get("/history", response_class=HTMLResponse)
 async def history(request: Request):
-    return templates.TemplateResponse("history.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="history.html")
 
 @app.get("/stats", response_class=HTMLResponse)
 async def stats(request: Request):
-    return templates.TemplateResponse("stats.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="stats.html")
