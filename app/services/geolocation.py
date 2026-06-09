@@ -4,7 +4,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "GeoLite2-City.mmdb")
+# Спускаемся на 3 уровня вниз: из app/services/geolocation.py в корень проекта, затем ищем папку data
+DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "GeoLite2-City.mmdb")
 
 def get_geolocation(ip_address: str):
     if not os.path.exists(DB_PATH):
